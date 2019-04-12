@@ -1,0 +1,29 @@
+{
+  "name": "gooferland",
+  "version": "1.0.0",
+  "description": "un petit tour au pays de goofers",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ppomet/GooferLand.git"
+  },
+  "keywords": [
+    "goofer",
+    "design pattern",
+    "design",
+    "pattern",
+    "js",
+    "JS",
+    "JavaScript",
+    "javascript"
+  ],
+  "author": "Pepo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ppomet/GooferLand/issues"
+  },
+  "homepage": "https://github.com/ppomet/GooferLand#readme"
+}
