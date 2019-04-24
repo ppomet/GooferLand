@@ -25,5 +25,8 @@
   "bugs": {
     "url": "https://github.com/ppomet/GooferLand/issues"
   },
-  "homepage": "https://github.com/ppomet/GooferLand#readme"
+  "homepage": "https://github.com/ppomet/GooferLand#readme",
+  "devDependencies": {
+    "nodemon": "^1.18.11"
+  }
 }
