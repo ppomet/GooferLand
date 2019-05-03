@@ -2,37 +2,32 @@ Goofer = require('./models/GooferClass');
 Genomics = require('./models/Genomics');
 
 class GooferFactory {
-    constructor(genePool) {
+    constructor(genePool, isMutable) {
         if (! GooferFactory.instance) {
             this.genePool = genePool;
-            this.MyGenomics = new Genomics(genePool);
+            this.MyGenomics = new Genomics(genePool, isMutable);
             GooferFactory.instance = this;
             Object.freeze(GooferFactory);
         }
         return GooferFactory.instance;
     }
 
-    createGoofer(name, age) {//facade
+    createGoofer(name, age, isMale) {
         if (!name || (typeof(name)) !== "string") {
-            console.log('bad name in the goofer factory', name);
             throw new Error("name is incorrect or absent");
-        } else {
-            console.log('security for naming goofer is passed');
         }
-        if (!age) {
+        if (!age || age < 0) {
             age = 0;
-        } else {
-            console.log('security for naming goofer is passed');
         }
-        console.log('name->', name,'age->', age);
-        let goofer = new Goofer(name, age, this.MyGenomics.getRandGenePool());
-        console.log('created goofer => ', goofer);
+        let goofer = new Goofer(
+          name,
+          age,
+          this.MyGenomics.getRandGenePool(),
+          isMale);
         return (goofer);
     }
 
-    getGenePool() {
-        // console.log('this=>', this);
-        console.log('GenePool in the GooferFactory : ', this.genePool);
+    getFactoryGenePool() {
         return this.genePool.slice();
     }
 }

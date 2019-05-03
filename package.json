@@ -28,5 +28,8 @@
   "homepage": "https://github.com/ppomet/GooferLand#readme",
   "devDependencies": {
     "nodemon": "^1.18.11"
+  },
+  "dependencies": {
+    "faker": "^4.1.0"
   }
 }
