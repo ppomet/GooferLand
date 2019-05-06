@@ -3,15 +3,18 @@ grille dimension 2 constructeur(width, height)
 
 liste de goofer inside grid
 
-a chaque tick de la ville il y a n  carrés qui genererons de la nouritture
+a chaque tick de la ville il y a n  carrés qui genererons
+de la nourriture
 
 a chaque tick les goofer se deplacent de 1
 
 apres chaque deplacement
 si nourriture a moins de une case, ils mangent la nouriture
 
-si nouriture > 2 et goofer femmelle < 2 et du coup goofer male nouritture = 0 parcequíl la donne a la femelle et la femelle fait un oeuf
+si nouriture > 2 et goofer femmelle < 2 et du coup:
+goofer male nouritture = 0 parcequ'il la donne a la femelle
+et la femelle fait un oeuf
 
 grille est une classe avec getter et setter pour les case de la grille une case peut contenir un goofer || une bouffe (de facon inclusive)
 
-la ville est un emmeteur d'events mais la grille et les goofers sont des "ecouteurs"
+la ville est un emeteur d'events mais la grille et les goofers sont des "ecouteurs"

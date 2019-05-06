@@ -1,11 +1,17 @@
 EventEmitter = require('events');
+Randomize = require('../models/Randomize');
 
 class Goofer {
-    constructor(name, age, genome, isMale = false){
+    constructor(name, age, genome, isMale = false, events){
         this.name = name;
         this.age = age;
         this.genome = genome;
         this.isMale = isMale;
+        this.events = events;
+        this.rand = new Randomize();
+        this.cb1 = (data) => {
+          console.log(`goofer cb1 ${data}`);
+        };
     }
     getHalfGenome() {
         if (this.age < 5) {
@@ -19,16 +25,17 @@ class Goofer {
         } else {
           console.log(`the goofette ${this.name} layed an egg`);
         }
-        let jdx = 0;
-        let temp = null;
-        let tempgenomics = this.genome.slice();
-        for (let idx = 0; idx < this.genome.length; idx++){
-            jdx = Math.floor(Math.random() * (idx + 1));
-            temp = tempgenomics[idx];
-            tempgenomics[idx] = tempgenomics[jdx];
-            tempgenomics[jdx] = temp;
-        }
-        return tempgenomics.slice(0 , Math.ceil(this.genome.length / 2) );
+        return this.rand.array(this.genome).slice(0 , Math.ceil(this.genome.length / 2) );
+        // let jdx = 0;
+        // let temp = null;
+        // let tempgenomics = this.genome.slice();
+        // for (let idx = 0; idx < this.genome.length; idx++){
+        //     jdx = Math.floor(Math.random() * (idx + 1));
+        //     temp = tempgenomics[idx];
+        //     tempgenomics[idx] = tempgenomics[jdx];
+        //     tempgenomics[jdx] = temp;
+        // }
+        // return tempgenomics.slice(0 , Math.ceil(this.genome.length / 2) );
     }
     happyBirthday() {
       this.age++;
@@ -39,12 +46,24 @@ class Goofer {
       }
     }
 
-    gooferEmiter(msg) {
-      // new EventEmitter().emit()
-      console.log(`the goofer ${this.name} said ${msg}`);
+    gooferHearing () {
+      // ici je dois listen des trucs ... je crois ...
     }
+
+    addGooferlistener (thingToListen) {
+      this.events.on(thingToListen, )
+    }
+
+    gooferEmitter(msg) {
+      // Object.assign(this, {eventEmitter: new EventEmitter()});// j'ai le droit de faire ca ?
+      console.log(`the goofer ${this.name} said ${msg}`);
+      return msg;
+    }
+
+    cb2 (data) {
+      console.log(`goofer cb2 ${data}`);
+    };
     
 }
-
 
 module.exports = Goofer;
