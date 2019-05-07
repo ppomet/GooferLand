@@ -5,7 +5,7 @@ class Randomize {
     const iMin = (intMin ? intMin : 0);
     const iMax = (intMax ? intMax : 100);
     if (iMin > iMax) {
-      throw new Error('le nombre minimum ne peut etre inferieur au nombre maximum');
+      throw new Error('le nombre maximum ne peut etre inferieur au nombre minimum');
     }
     return Math.floor(Math.random() * (iMax - iMin) + iMin)
   }

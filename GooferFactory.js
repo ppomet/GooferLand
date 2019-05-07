@@ -12,7 +12,7 @@ class GooferFactory {
         return GooferFactory.instance;
     }
 
-    createGoofer(name, age, isMale) {
+    createGoofer(name, age, isMale, events) {
         if (!name || (typeof(name)) !== "string") {
             throw new Error("name is incorrect or absent");
         }
@@ -23,7 +23,8 @@ class GooferFactory {
           name,
           age,
           this.MyGenomics.getRandGenePool(),
-          isMale);
+          isMale,
+          events);
         return (goofer);
     }
 

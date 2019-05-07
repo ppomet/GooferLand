@@ -4,34 +4,95 @@ EventEmitter = require('events');
 
 class City {
   constructor(width, height, foodGeneratingCells, cityName) {
+
+    ((Math.abs(width) === width && width >= 1) ? this.width = width : this.width  = 1);
+    ((Math.abs(height) === height && height >= 1) ? this.height = height : this.height  = 1);
+
+
     this.rand = new Randomize();
+    console.log('this.rand = ');
+    console.log(this.rand);
+
+
+
+
     this.eventHandler = new EventEmitter();
     this.name = cityName;
-    ((width && typeof width == "number" && width >= 1) ? this.width = width: this.width  = 1)
-    ((height && typeof height == "number" && height >= 1) ? this.height = height: this.height  = 1)
+    this.foodOnGrid = 0;
+    this.gridFFC;
     this.grid = new TheGrid(width, height, this.eventHandler);
-    if (foodGeneratingCells &&
+
+    if (foodGeneratingCells && // TODO: refacto avec abs
       typeof foodGeneratingCells === "number" &&
       foodGeneratingCells > 0) {
         this.fGC = foodGeneratingCells;
       } else {
         this.fGC = Math.floor(width * height / 20);// def val = 5% des cells
       }
-    gooferCitizens = [];// ???
-    // gooferCitizens = {};// ???
-    this.foodOnGrid = 0;
-    this.gridFFC;
-    freeFoodCells();
 
+    this.bob = () => {
+      console.log('this rand in generate food rand');
+      console.log(this);
+      let x = this.rand.integer(0, this.width);
+      let y = this.rand.integer(0, this.height);
+      let idx = 0;
+      while (idx < this.fGC) {
+        if (this.foodOnGrid == this.maxGridFood) {break}
+        if (!this.grid.column[x][y].getFood()) {
+          this.grid.column[x][y].setFood(1);
+          this.foodOnGrid++;
+          this.gridFFC--;
+          idx++;
+        } else {
+          x = this.rand.integer(0, this.width);
+          y = this.rand.integer(0, this.height);
+        }
+      }
+    }
+
+    this.gooferCitizens = [];
+    // this.gooferCitizens = {};// ???
+    
+    this.freeFoodCells();
+    // console.log('||||||||||');
+    // console.log(`etat de la grille in city constructor ${JSON.stringify(this.grid)}`);
+    console.log('||||||||||');
+    console.log('this.grid in cityconstruct');
+    console.log(this.grid);
+    console.log('||||||||||');
+    console.log('this.grid.getGridContent in cityconstruct');
+    console.log(this.grid.getGridContent);
+    // console.log(`etat de la methode getGridContent de grille in city constructor ${JSON.stringify(this.grid.getGridContent)}`);
+    console.log('||||||||||');
+    // console.log(`etat du listener de la grille ${JSON.stringify(this.grid.myEventHandler)}`);
+    this.dayNnight(5000);
+    this.evntEmtrSnif();
+    console.log(`etat du this.generateFoodRand in the construct`);
+    console.log(this.generateFoodRand);
+    this.setfGC(1);
+
+    this.eventHandler.on('tick', this.bob);
+    // this.eventHandler.on();
+  }
+
+  setfGC(val) {
+    this.fGC = val;
+  }
+
+  evntEmtrSnif() {
+    setInterval(() => {
+      console.log(`state of event Emitter from sniffer ${JSON.stringify(this.eventHandler)}`)
+    }, 10000)
   }
     
     dayNnight(msDuration) {
       setInterval(() => {
-        this.eventHandler.emit('tick', {city: name, event: "newday"});
+        this.eventHandler.emit('tick', {city: this.name, event: "newday"});
       }, msDuration)
     }
     
-    addGooferCitizen(goofer) {
+    addGooferCitizen(goofer, events) {
+      goofer.addGooferListener('tick', events);
       this.gooferCitizens[goofer.name] = goofer;
     }
 
@@ -41,14 +102,16 @@ class City {
       console.log("DELETE", this.gooferCitizen[gooferName])
     }
     
-    generateFoodRand(fGC) {
+    generateFoodRand () {
+      console.log('this rand in generate food rand');
+      console.log(this);
       let x = this.rand.integer(0, this.width);
       let y = this.rand.integer(0, this.height);
       let idx = 0;
-      while (idx < fGC) {
+      while (idx < this.fGC) {
         if (this.foodOnGrid == this.maxGridFood) {break}
-        if (!this.grid[x][y].getFood()) {
-          this.grid[x][y].setFood(1);
+        if (!this.grid.column[x][y].getFood()) {
+          this.grid.column[x][y].setFood(1);
           this.foodOnGrid++;
           this.gridFFC--;
           idx++;
@@ -59,7 +122,7 @@ class City {
       }
     }
     
-    generateFoodFill (fGC) {
+    generateFoodFill () {
       let foodPlaced = 0;
       for (let x = 0; x < this.width; x++) {
         for (let y = 0; y < this.height; y++) {
@@ -67,7 +130,7 @@ class City {
             this.grid[x][y].setFood(1);
             this.foodOnGrid++;
             foodPlaced++;
-            if (foodPlaced = fGC) {return}
+            if (foodPlaced = this.fGC) {return}
           }
         }
       }
@@ -77,7 +140,8 @@ class City {
       let freeFoodCells = 0;
       for (let x = 0; x < this.width; x++) {
         for (let y = 0; y < this.height; y++) {
-          if (!this.grid[x][y].getFood()) {
+          // console.log('this machin', this.grid);
+          if (!this.grid.column[x][y].getFood()) {
             freeFoodCells++;
           }
         }

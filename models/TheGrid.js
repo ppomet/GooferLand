@@ -4,11 +4,11 @@ Goofer = require('../models/GooferClass');
 class TheGrid {
   constructor(width, height, eventH) {
     if (height < 0 || width < 0) {
-      throw new Error('the grid can\'t have negative side');
+      throw new Error(`the grid can\'t have negative sides width:${width} height:${height}`);
     }
     this.width = width || 1;
     this.height = height || 1;
-    this.myEventHandler = eventH;// security
+    this.myEventHandler = eventH;// security ...
     this.column = Array(this.height).fill(null);
     this.cb1 = (data) => {
       console.log(`TheGrid cb1 ${data}`);
@@ -18,30 +18,42 @@ class TheGrid {
       for(let y = 0; y < this.width; y++){
         this.column[x][y] = new CellContent(0, x, y);
       }
-    }    
+    }
+    console.log('------');
+    console.log('this in Grid construct');
+    console.log(this);
+    console.log('------');
+    console.log('this.getGridContent in grid constructor <><><><>');
+    console.log(this.getGridContent);   
+    console.log('------');
   }
 
-  getCaseContent(x, y) {
+  getCaseContent(x, y) {// bridge ??
     return this.column[x][y].getCellContent();
   }
 
   setCaseContent(x, y, food, goofer) {
-    if (x && y && x > 0 && y > 0 && x <= this.x && y <= this.y)
+    if (typeof x == "number" && typeof y == "number" && x >= 0 && y >= 0 && x < this.width && y < this.height)
     {
       (food ? this.column[x][y].food = food : this.column[x][y].food = 0);
       ((goofer && goofer instanceof Goofer) ? this.column[x][y].goofer = goofer : null);
     } else {
+      console.log(`is X ? ${!!x}`);
+      console.log(`is Y ? ${!!y}`);
+      console.log(`this.x ${this.width} this.y ${this.height}`);
+      console.log(`x: ${x} y: ${y}, food: ${food} goofer: ${goofer}`);
       throw new Error('un des parametres du setter de la grid est incorrect');
     }
   }
 
-  isCellGooferPresent (x, y) {
-    if (x && y && x > 0 && y > 0 && x <= this.x && y <= this.y)
+  isCellGooferPresent (x, y) {// bridge ??
+    // if (typeof x == "number" && typeof y == "number" && x >= 0 && y >= 0 && x < this.width && y < this.height)
+    if ((Math.abs(x) + Math.abs(y) === x + y) && x < this.width && y < this.height)
     {
       return this.column[x][y].isGooferPresent();
     } else {
-      let errMsg = `bad coordinates for is cellContain goofer (x ${x},y ${y}) method`;
-      throw new Error(errMsg)
+      let errMsg = `bad coordinates for isCellContainGoofer (x ${x},y ${y}) method`;
+      throw new Error(errMsg);
     }
   }
 

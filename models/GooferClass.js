@@ -10,9 +10,11 @@ class Goofer {
         this.events = events;
         this.rand = new Randomize();
         this.cb1 = (data) => {
-          console.log(`goofer cb1 ${data}`);
+          console.log(`goofer cb1 ${JSON.stringify(data)}`);
         };
+        // this.addGooferlistener('tick');
     }
+
     getHalfGenome() {
         if (this.age < 5) {
             console.log('the goofer', this.name,'is still juvenile');
@@ -50,8 +52,9 @@ class Goofer {
       // ici je dois listen des trucs ... je crois ...
     }
 
-    addGooferlistener (thingToListen) {
-      this.events.on(thingToListen, )
+    addGooferListener (thingToListen, events) {
+      
+      events.on(thingToListen, this.cb1);
     }
 
     gooferEmitter(msg) {

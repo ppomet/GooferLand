@@ -5,17 +5,12 @@ Randomize = require('../models/Randomize');
 
 class RandFactory {
   constructor(genePoolSize, genesLength, isMutable) {
-    if (! GooferFactory.instance) {
       this.rand = new Randomize();
       this.MyGenomics = new Genomics(false, isMutable, genePoolSize, genesLength);
-      GooferFactory.instance = this;
       console.log(`randfactory genepool => ${this.MyGenomics.genePool}`);
-      Object.freeze(GooferFactory);
-    }
-    return GooferFactory.instance;
   }
   
-  createGoofer(isMale) {
+  createGoofer(isMale, events) {
     let gender;
     if (typeof isMale == "undefined") {
       gender = !(Math.floor(this.rand.integer(1, 6)) < 4);
@@ -26,11 +21,11 @@ class RandFactory {
       `${Faker.name.firstName()} RD`,  
       this.rand.integer(0, 26),
       this.MyGenomics.getRandGenePool(),
-      gender);
+      gender, events);
       return (goofer);
     }
     
-    createNbGoofers (numberOfGoofers, isMale) {
+    createNbGoofers (numberOfGoofers, isMale, events) {
       if (numberOfGoofers &&
         typeof(numberOfGoofers) === "number" &&
         numberOfGoofers > 0) {

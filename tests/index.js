@@ -6,9 +6,11 @@ RandFactory = require('../models/RandFactory')
 GooferGenerator = require('../GooferGenerator');
 CellContent = require('../models/CellContent');
 CityGrid = require('../models/TheGrid');
+City = require('../models/City');
 Faker = require('faker/locale/fr');
 
 const myRand = new Randomize();
+const myRandFacto = new RandFactory(6, 3);
 
 
 tests = () => {
@@ -16,11 +18,11 @@ tests = () => {
   // testGooferClass();
   // testGenomics();
   // testGooferFactory();
-  testRandFactory();
+  // testRandFactory();
   // testGooferGenerator();
-  // testCaseContent();
+  // testCellContent();
   testTheGrid();
-  // testCity();
+  testCity();
 }
 
 testRandomize = () => {
@@ -193,13 +195,15 @@ testGooferGenerator = () => {
   console.log();
 }
 
-testCaseContent = () => {
+testCellContent = () => {
   console.log();
   console.log('---<> debut de la batterie de tests de la classe CellContent <>---');
   console.log();
   let testGoofer;
-  for (let i = 0; i < 10; i++) {
-    (!!myRand.integer(0, 2) ? testGoofer = new Goofer(): testGoofer = undefined) 
+  const randfact = new RandFactory(6, 2);
+  for (let i = 0; i < 5; i++) {
+    // (!!myRand.integer(0, 2) ? testGoofer = randfact.createGoofer() : testGoofer = undefined) 
+    testGoofer = randfact.createGoofer();
     let testCellContent = new CellContent(
       myRand.integer(0, 2),
       myRand.integer(0, 255),
@@ -207,13 +211,52 @@ testCaseContent = () => {
       testGoofer);
       console.log(testCellContent);
   }
+  console.log();
+  console.log('---<> fin de la batterie de tests de la classe CellContent <>---');
+  console.log();
 }
 
 testTheGrid = () => {
   console.log();
   console.log('---<> debut de la batterie de tests de la classe TheGrid <>---');
-  let myGrid = new CityGrid(4, 4, 4);
+  console.log();
+
+  let myGrid = new CityGrid(3, 3);
   myGrid.getGridContent();
+  let x = 0;
+  let y = 0;
+  console.log('make food poppin ;-)');
+  myGrid.setCaseContent(x,y, 1);
+  myGrid.getCaseContent(x,y);
+  let testGoofer = myRandFacto.createGoofer();
+  x = 1;
+  myGrid.setCaseContent(x, y, 0, testGoofer);
+  myGrid.getCaseContent(x, y);
+  console.log(`test isCellGooferPresent x:${x} y:${y} ? ${myGrid.isCellGooferPresent(x, y)}`);
+  x = 0;
+  console.log(`test isCellGooferPresent x:${x} y:${y} ? ${myGrid.isCellGooferPresent(x, y)}`);
+  // console.log(`${}`);
+  // console.log(`${}`);
+
+  console.log();
+  console.log('---<> fin de la batterie de tests de la classe TheGrid <>---');
+  console.log();
+}
+
+testCity = () => {
+  console.log();
+  console.log('---<> debut de la batterie de tests de la classe City <>---');
+  console.log();
+  let myFact = new RandFactory(6, 2);
+  let myCity = new City(5, 5, 5, "testCity");
+
+  console.log(`${JSON.stringify(this)}`);
+  myCity.addGooferCitizen(myFact.createGoofer(undefined), myCity.eventHandler);
+  // myCity.
+
+  console.log();
+  console.log('---<> fin de la batterie de tests de la classe City <>---');
+  console.log();
 }
 
 module.exports = tests;
