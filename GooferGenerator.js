@@ -1,4 +1,4 @@
-Goofer = require('./models/GooferClass');
+Goofer = require('./models/Goofer');
 Genomics = require('./models/Genomics');
 
 generateGoofer = (goofer1, goofer2, name) => {

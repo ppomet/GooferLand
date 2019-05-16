@@ -1,4 +1,4 @@
-Goofer = require('../models/GooferClass');
+Goofer = require('../models/Goofer');
 Genomics = require('../models/Genomics');
 Faker = require('faker/locale/fr');
 Randomize = require('../models/Randomize');
@@ -7,13 +7,13 @@ class RandFactory {
   constructor(genePoolSize, genesLength, isMutable) {
       this.rand = new Randomize();
       this.MyGenomics = new Genomics(false, isMutable, genePoolSize, genesLength);
-      console.log(`randfactory genepool => ${this.MyGenomics.genePool}`);
+      // console.log(`randfactory genepool => ${this.MyGenomics.genePool}`);
   }
   
   createGoofer(isMale, events) {
     let gender;
     if (typeof isMale == "undefined") {
-      gender = !(Math.floor(this.rand.integer(1, 6)) < 4);
+      gender = !!(this.rand.integer(0, 101) > 57);
     } else {
       gender = isMale;
     }

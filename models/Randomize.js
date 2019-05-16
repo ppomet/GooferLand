@@ -1,11 +1,16 @@
 class Randomize {
   constructor() { }
 
-  integer(intMin, intMax) {// attention intmax est exclu des valeurs possible
+  integer(intMin, intMax) {// attention intmax est exclu des valeurs possibles
+
     const iMin = (intMin ? intMin : 0);
     const iMax = (intMax ? intMax : 100);
-    if (iMin > iMax) {
+    if (Math.abs(intMin) !== intMin || Math.abs(intMax) !== intMax) {
+      throw new Error('les nombres, DOIVENT etre des nombres');
+    } else if (iMin > iMax) {
       throw new Error('le nombre maximum ne peut etre inferieur au nombre minimum');
+    }else if (intMin === intMax) {
+      return intMin;
     }
     return Math.floor(Math.random() * (iMax - iMin) + iMin)
   }
