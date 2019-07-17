@@ -1,37 +1,41 @@
-CellContent = require('../models/CellContent');
+Cell = require('../models/Cell');
 Goofer = require('../models/Goofer');
 Randomize = require('../models/Randomize');
 debug = require('debug')('insideGrid');
 
-class TheGrid {
+class Grid {
 
-  constructor(EventH, width, height, foodGeneratingCells) {
+  constructor(width, height) {
 
     if (Math.abs(width) !== width || Math.abs(height) !== height) {
+      debug(`Grid constructor Width: ${width} Height: ${height}`)
       throw new Error(`the grid can\'t have negative sides width:${width} height:${height}`);
     }
-    if (Math.abs(foodGeneratingCells) !== foodGeneratingCells) {
-      throw new Error(`Bad value for foodGeneratingCells >${foodGeneratingCells}<`);
-    }
-
-    this.rand = new Randomize();
+    // if (Math.abs(foodGeneratingCells) !== foodGeneratingCells) {
+    //   throw new Error(`Bad value for foodGeneratingCells >${foodGeneratingCells}<`);
+    // }
+    this.rand = null;
     this.width = width || 2;
     this.height = height || 2;
     this.freeFoodCells = this.width * this.height;
-    this.fGC = foodGeneratingCells || Math.floor(this.width * this.height / 20);// def val = 5% des cells
-    this.myEventHandler = EventH;
-    this.column = Array(this.height).fill(null);
+    this.fGC = Math.floor(this.width * this.height / 20);// def val = 5% des cells generent de la nourriture 
+    this.myEventHandler = null;
+    this.rowOfMap = Array(this.width).fill(null).map;
+    // this.map = Array(this.height).fill(this.rowOfMap).map((elem, xIdx) => {
+    //   elem.map((cell, yIdx) => {
+    //     cell = new Cell(xIdx, yIdx, null);
+    //   })
+    // });
+    this.mapArray = null;
+    this.map = Array(this.height).fill(this.rowOfMap);
 
-    this.sayWhatYouListened = () => {
-      console.log(`TheGrid sayWhatYouListened >'tick'<`);
-    };
-
-    for (let x = 0; x < this.height; x++) {
-      this.column[x] = Array(this.width).fill(null);
+    for (let x = 0; x < this.height; x++) {// generation de la map;
+      this.map[x] = Array(this.width).fill(null);
       for(let y = 0; y < this.width; y++){
-        this.column[x][y] = new CellContent(0, x, y);
+        this.map[x][y] = new Cell(0, x, y);
       }
     }
+    // let newGrid = grid(width, height).map((e,index2) => e.map((e,index1) => e = new Place(index2,index1,"nothing")));
 
 
     this.generateFoodRand = () => {
@@ -42,8 +46,8 @@ class TheGrid {
         if (!this.freeFoodCells) {
           break;
         }
-        if (!this.column[x][y].getFood()) {
-          this.column[x][y].setFood(1);
+        if (!this.map[x][y].getFood()) {
+          this.map[x][y].setFood(1);
           this.freeFoodCells--;
           idx++;
         } else {
@@ -59,13 +63,11 @@ class TheGrid {
       let foodPlaced = 0;
       for (let x = 0; x < this.width; x++) {
         for (let y = 0; y < this.height; y++) {
-          // debug(`turn ${(y+1) * (x+1)}`);
-          if (!this.column[x][y].getFood()) {
-            this.column[x][y].setFood(1);
+          if (!this.map[x][y].getFood()) {
+            this.map[x][y].setFood(1);
             this.freeFoodCells--;
             foodPlaced++;
-            if (!this.freeFoodCells) {
-              // debug(`Foodfill`)
+            if (!this.freeFoodCells || foodPlaced === this.fGC) {
               debug(`Fill food put on grid >${foodPlaced}<`);
               debug(`space left for food on the grid >${this.freeFoodCells}<`)
               return;
@@ -75,27 +77,38 @@ class TheGrid {
           }
         }
       }
-    }
+    };
 
-    this.setfoodGeneratingCells = (FGC) => {
-      this.fGC = FGC || Math.floor(this.width * this.height / 20);
-    }
 
+    this.generateFood = () => {
+      if (this.fGC < (this.width * this.height / 20) || this.freeFoodCells < this.fGC) {
+        this.generateFoodFill();
+      } else {
+        this.generateFoodRand();
+      }
+    }
   }
 
-  generateFoodFillListen(EventToListen) {
-    this.myEventHandler.on(EventToListen, this.generateFoodRand);
+  setEventHandler(EventHandlerRef) {
+    this.myEventHandler = EventHandlerRef;
+  }
+
+  setRandomizer(RandomizerRef) {
+    this.rand = RandomizerRef;
+  }
+
+  setfoodGeneratingCells(value) {
+    this.fGC = value;
   }
 
   getCaseContent(x, y) {
-    return this.column[x][y].getCellContent();
+    return this.map[x][y].getCellContent();
   }
 
-  setCaseContent(x, y, food, goofer) {
-    if (typeof x == "number" && typeof y == "number" && x >= 0 && y >= 0 && x < this.width && y < this.height)
-    {
-      (food ? this.column[x][y].food = food : this.column[x][y].food = 0);
-      ((goofer && goofer instanceof Goofer) ? this.column[x][y].goofer = goofer : null);
+  setCaseContent(x, y, goofer, food) {
+    if (typeof x == "number" && typeof y == "number" && x >= 0 && y >= 0 && x < this.width && y < this.height) {
+      (food ? this.map[x][y].food = food : this.map[x][y].food = 0);
+      ((goofer && goofer instanceof Goofer) ? this.map[x][y].goofer = goofer : null);
     } else {
       debug(`is X ? ${!!x}`);
       debug(`is Y ? ${!!y}`);
@@ -106,9 +119,8 @@ class TheGrid {
   }
 
   isCellGooferPresent(x, y) {
-    if ((Math.abs(x) + Math.abs(y) === x + y) && x < this.width && y < this.height)
-    {
-      return this.column[x][y].isGooferPresent();
+    if ((Math.abs(x) + Math.abs(y) === x + y) && x < this.width && y < this.height) {
+      return this.map[x][y].isGooferPresent();
     } else {
       let errMsg = `bad coordinates for isCellContainGoofer (x ${x},y ${y}) method`;
       throw new Error(errMsg);
@@ -116,17 +128,23 @@ class TheGrid {
   }
 
   getGridContent() {
+    let contentArray = []
     for (let _x = 0; _x < this.height; _x++) {
       for (let _y = 0; _y < this.width; _y++) {
-        this.column[_x][_y].getCellContent();
+        contentArray.push(this.map[_x][_y].getCellContent());
       }
-    };
+    }
+    ;
+    return contentArray;
   }
 
-  theGridSubscriber(eventFuncRef, eventToSubscribe) { // ('tick', (data) ={console.log(data)})
-    eventFuncRef.on(eventToSubscribe, this.sayWhatYouListened);
+  checkCoordinates(x, y) {
+    if ((Math.abs(x) + Math.abs(y) === x + y) && x < this.width && y < this.height) {
+      return true;
+    }
+    return false;
   }
-
 }
 
-module.exports = TheGrid;
+module.exports = Grid;
+

@@ -1,24 +1,21 @@
 class Citizen {
-  constructor(name, myEvents) {
+  constructor(name, EventHandler) {
     this.name = name;
-    this.myEvents = myEvents;
-    this.tickHandler2 = (data) => {
-      console.log(`${data.city} heard a new tick`);
-    }
-    // this.addTickListiner();
+    this.myEventHandler = EventHandler;
+
   }
 
-  tickHandler(data) {
-    console.log(`${this.name} heard a new tick`);
+  addEventListener(event) {
+    this.myEventHandler.on(event, this.eventHandled(event))
   }
 
-  addTickListiner() {
-    this.myEvents.on('tick', this.tickHandler2)
+  eventHandled(data, event) {
+    console.log(`${data.city} heard a new ${event}`);
   }
 
-  deleteTickListiner() {
-    console.log("deleting listener for", this.name)
-    this.myEvents.removeListener('tick', this.tickHandler2)
+  deleteEventListiner(event) {
+    console.log(`deleting listener for ${event} event for ${this.name}`);
+    this.myEventHandler.removeListener(event, this.eventHandled(event))
   }
 }
 module.exports = Citizen;

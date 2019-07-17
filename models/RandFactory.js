@@ -10,7 +10,7 @@ class RandFactory {
       // console.log(`randfactory genepool => ${this.MyGenomics.genePool}`);
   }
   
-  createGoofer(isMale, events) {
+  createGoofer(eventHandler, isMale) {
     let gender;
     if (typeof isMale == "undefined") {
       gender = !!(this.rand.integer(0, 101) > 57);
@@ -21,20 +21,22 @@ class RandFactory {
       `${Faker.name.firstName()} RD`,  
       this.rand.integer(0, 26),
       this.MyGenomics.getRandGenePool(),
-      gender, events);
+      gender,
+      eventHandler
+    );
       return (goofer);
     }
     
-    createNbGoofers (numberOfGoofers, isMale, events) {
+    createNbGoofers (eventHandler, numberOfGoofers, isMale) {
       if (numberOfGoofers &&
         typeof(numberOfGoofers) === "number" &&
         numberOfGoofers > 0) {
           const GooferList = Array(numberOfGoofers).fill(null);
           for (let idx = 0; idx < numberOfGoofers; idx++) {
             if (isMale === undefined) {
-              GooferList[idx] = this.createGoofer( !!(idx%2));
+              GooferList[idx] = this.createGoofer( !!(idx%2), eventHandler);
             } else {
-              GooferList[idx] = this.createGoofer(isMale);
+              GooferList[idx] = this.createGoofer(isMale, eventHandler);
             }
           }
           return GooferList;

@@ -7,37 +7,32 @@ Factdebug = debug('testFact');
 RDFdebug = debug('testRDFact');
 Listdebug = debug('testList');
 
-
-
-
-
-// debugtest = debug('test');
-
 colors = require('colors');
 
-const red = (txt) => {return colors.red(txt)};
-const gre = (txt) => {return colors.green(txt)};
-const yel = (txt) => {return colors.yellow(txt)};
-const blu = (txt) => {return colors.blue(txt)};
-const mag = (txt) => {return colors.magenta(txt)};
-const cya = (txt) => {return colors.cyan(txt)};
-const rai = (txt) => {return colors.rainbow(txt)};
-const zeb = (txt) => {return colors.zebra(txt)};
-const tra = (txt) => {return colors.trap(txt)};
-const ran = (txt) => {return colors.random(txt)};
-const Merica = (txt) => {return colors.america(txt)};
+const red = (coloredTxt) => {return colors.red(coloredTxt)};
+const gre = (coloredTxt) => {return colors.green(coloredTxt)};
+const yel = (coloredTxt) => {return colors.yellow(coloredTxt)};
+const blu = (coloredTxt) => {return colors.blue(coloredTxt)};
+const mag = (coloredTxt) => {return colors.magenta(coloredTxt)};
+const cya = (coloredTxt) => {return colors.cyan(coloredTxt)};
+const rai = (coloredTxt) => {return colors.rainbow(coloredTxt)};
+const zeb = (coloredTxt) => {return colors.zebra(coloredTxt)};
+const tra = (coloredTxt) => {return colors.trap(coloredTxt)};
+const ran = (coloredTxt) => {return colors.random(coloredTxt)};
+const Merica = (coloredTxt) => {return colors.america(coloredTxt)};
 
+EventHandler = require('events');
 Randomize = require('../models/Randomize');
 Goofer = require('../models/Goofer');
 Genomics = require('../models/Genomics');
 GooferFactory = require('../GooferFactory');
-RandFactory = require('../models/RandFactory')
+RandFactory = require('../models/RandFactory');
 GooferGenerator = require('../GooferGenerator');
-CellContent = require('../models/CellContent');
+CellContent = require('../models/Cell');
 CityGrid = require('../models/TheGrid');
 City = require('../models/City');
-Faker = require('faker/locale/fr');
-HF = require('./headerFooter')
+chance = require('chance').Chance();
+HF = require('./headerFooter');
 
 const myRand = new Randomize();
 const myRandFacto = new RandFactory(6, 3);
@@ -56,9 +51,9 @@ tests = () => {
   console.log();
   Testdebug(`${red('----')} ${gre('Debut de la batterie de tests')} ${red('----')}`);
   console.log();
-  // Testdebug(`colors test ${red('red')} ${gre('green')} ${rai('there is the rainbow')}`);
-  // testRandomize(25);
-  // testGoofer(3);
+  Testdebug(`colors test ${red('red')} ${gre('green')} ${rai('there is the rainbow')}`);
+  testRandomize(50);
+  testGoofer(100);
   // testGenomics(20);
   // testGooferFactory(15);
   // testRandFactory(15);
@@ -71,7 +66,7 @@ tests = () => {
   console.log();
   Testdebug(`${red('----')} ${gre('Fin de la batterie de tests')} ${red('----')}`);
   console.log();
-}
+};
 
 testRandomize = (iterations) => {
   iterations = secureIteration(iterations);
@@ -103,45 +98,69 @@ testRandomize = (iterations) => {
 }
 
 testGoofer = (iterations) => {
-  iterations = secureIteration(iterations);
+  // iterations = secureIteration(iterations);
   console.log();
   Goodebug('debut des tests du Goofer');
   console.log();
 
 
-
+  let myGooferEventhandler = new EventHandler();
+  let gooferArray = [];
+  myGooferEventhandler.on("Dying Goofer", (name) => {
+    gooferArray = gooferArray.filter((item) => {
+      return  item.name !== name;
+    })
+  });
   for (let idx = 0; idx < iterations; idx++) {
-    let myGoofer = new Goofer(Faker.name.firstName() , (idx * 3), ["A", "B", "C", "D", "E"], !!((idx + idx + 1)% 3));
+    let gooferGender = ((idx + idx + 1)% 3) ? 'female' : 'male';
+    const nameOpts = {nationality: 'fr', gender: gooferGender, middle: true};
+    let myGoofer = new Goofer(chance.name(nameOpts) , ["A", "B", "C", "D", "E", "F"], myGooferEventhandler, gooferGender === 'male', idx);
     if (myGoofer) {
-      Goodebug(gre(`creation of a goofer ok: ${JSON.stringify(myGoofer)}`));
+      Goodebug(yel(`creation of a goofer ok: ${JSON.stringify(myGoofer)}`));
       if (myGoofer.getHalfGenome) {
-        Goodebug('getHalfGenome exist in Goofer');
+        Goodebug(gre('getHalfGenome exist in Goofer'));
       } else {
         throw new Error("goofer is lacking the method getHalfGenome");
       }
       if(myGoofer.happyBirthday) {
+        Goodebug(gre('happyBirthday method exist in Goofer'));
         for(let i = 0; i < 27; i++) {
           myGoofer.happyBirthday();
-          if (i == 0 || i == 5 || i == 10 || i == 25){
+          if (i === 0 || i === 5 || i === 10 || i === 25){
             Goodebug(gre(`halfgenome of ${myGoofer.name} age ${myGoofer.age} => [${myGoofer.getHalfGenome()}]`));
           }
         }
-      }
-      let mymsg = "A message"
-      if (myGoofer.gooferEmitter) {
-        Goodebug(cya(`gooferEmitter exist in Goofer and render => '${myGoofer.gooferEmitter(mymsg)}'`));
+        myGoofer.age = 0;
       } else {
-        throw new Error("goofer is lacking the method gooferEmitter");
+        throw new Error('the goofer is lacking the HappyBirthday Method');
       }
+      if(myGoofer.lifeCycle) {
+        Goodebug(gre('lifeCycle method exist in Goofer'));
+        myGoofer.lifeCycle();
+      }
+    }
+    gooferArray.push(myGoofer);
+  }
+
+  for (let idx = 0; idx < 90; idx++) {
+    // console.log("for idx = ", idx);
+    Goodebug(cya(`array de viellesse length: ${gooferArray.length}`));
+    Goodebug(gooferArray.map((item) => {
+      item.happyBirthday();
+      return item.name + ' age: ' + item.age
+    }));
+    if (gooferArray.length === 0) {
+      Goodebug(blu("no more goofers in the array"));
+      break;
     }
   }
 
 
 
   console.log();
-  Rdebug('fin des tests du Goofer');
+  Goodebug('fin des tests du Goofer');
   console.log();
-}
+};
 
 testGenomics = (iterations) => {
   iterations = secureIteration(iterations);
@@ -179,10 +198,10 @@ testGenomics = (iterations) => {
   } else {
     throw new Error("myGenomics is lacking the method makeRandGenePool");
   }
-  
 
 
-  
+
+
   console.log();
   Gndebug('---<> fin de la batterie de tests du Genomics<>---');
   console.log();
@@ -282,7 +301,7 @@ testCellContent = () => {
   let testGoofer;
   const randfact = new RandFactory(6, 2);
   for (let i = 0; i < 5; i++) {
-    // (!!myRand.integer(0, 2) ? testGoofer = randfact.createGoofer() : testGoofer = undefined) 
+    // (!!myRand.integer(0, 2) ? testGoofer = randfact.createGoofer() : testGoofer = undefined)
     testGoofer = randfact.createGoofer();
     let testCellContent = new CellContent(
       myRand.integer(0, 2),
@@ -315,8 +334,6 @@ testTheGrid = () => {
   console.log(`test isCellGooferPresent x:${x} y:${y} ? ${myGrid.isCellGooferPresent(x, y)}`);
   x = 0;
   console.log(`test isCellGooferPresent x:${x} y:${y} ? ${myGrid.isCellGooferPresent(x, y)}`);
-  // console.log(`${}`);
-  // console.log(`${}`);
 
   console.log();
   console.log('---<> fin de la batterie de tests de la classe TheGrid <>---');
@@ -351,19 +368,14 @@ testListeners = (iterations) => {
   Listdebug('---<> Debut de la batterie de tests des listeners <>---');
   console.log();
 
-  myScreamingCity = new City(4, 4, 2, 'The Screeeaming City');
-  mySreamingCity.dayNnight(1600);
-  // mySreamingCity.eventHandlerA.on('tick', mySreamingCity.grid.generateFoodRand);
-  myScreamingCity.grid.generateFoodFillListen('tock');
-
-
-
-
-  // mySreamingCity.grid.theGridSubscriber(mySreamingCity.eventHandlerA, 'tick');
-
-
-
-
+  let myScreamingCity = new City(4, 4, 2, 'The Screeeaming City');
+  myScreamingCity.dayAndNightWatcher().launchTimeFlow(1200);
+  let myfact = new RandFactory(6,3, true);
+  let testgoof = myfact.createGoofer(myScreamingCity.eventHandler);
+  setTimeout(()=> {
+    console.log(`...`);
+    testgoof.lifeCycle();
+  }, 4000);
 
   console.log();
   Listdebug('---<> Fin de la batterie de tests des listeners <>---');
