@@ -1,4 +1,4 @@
-EventEmitter = require('events');
+                                                                                       EventEmitter = require('events');
 
 
 class TheEmmiTTTER {
@@ -41,12 +41,12 @@ class Listener {
     }
 
     listen (thingToListen) {
-        
-        
+
+
         console.log(`<S><S><S><S><S><S><S><S>  ici ${this.myname} a souscrit a l'evenement >'${thingToListen}'< <S><S><S><S><S><S><S><S>`);
-        
-        
-        
+
+
+
         this.myEventEmiter.on(thingToListen, () => {
             // console.log('||||||||||||||||||||||||||||||||');
             console.log();
@@ -57,7 +57,7 @@ class Listener {
             console.log(this);
             console.log('++++++++++++++++++++++++++++');
             this.thingToSay(thingToListen.toUpperCase());
-        })   
+        })
     }
 }
 

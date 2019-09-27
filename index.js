@@ -1,4 +1,4 @@
-tests = require('./tests/index');
+const tests = require('./tests/index');
 
 
 

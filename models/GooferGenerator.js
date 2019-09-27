@@ -1,5 +1,5 @@
-Goofer = require('./models/Goofer');
-Genomics = require('./models/Genomics');
+Goofer = require('./Goofer');
+Genomics = require('./Genomics');
 
 generateGoofer = (goofer1, goofer2, name) => {
   if (!(goofer1 instanceof Goofer) ||

@@ -1,5 +1,9 @@
 class Randomize {
-  constructor() { }
+  constructor(options) { // TODO: integrate options
+    if (options) {
+      console.log( {RandomizeOptions: options } );
+    }
+  }
 
   integer(intMin, intMax) {// attention intmax est exclu des valeurs possibles
 
@@ -14,7 +18,7 @@ class Randomize {
     }
     return Math.floor(Math.random() * (iMax - iMin) + iMin)
   }
-  
+
   array(arrayToShuffle) {
     let jdx = 0;
     let temp = null;

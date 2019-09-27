@@ -1,4 +1,4 @@
-Randomize = require('../models/Randomize');
+const Randomize = require('../models/Randomize');
 
 class Genomics {
 
@@ -8,17 +8,33 @@ class Genomics {
                     this.makeRandGenePool(genePoolSize, genesLength) ||
                     ["AA", "BB", "CC", "DD", "EE", "FF"];
     this.isMutable = isMutable;
+    this.simpleGene = undefined;
+    this.randomizedGenePool = undefined;
   }
-  
+
   getRandGenePool() {
     if (this.isMutable) {
       return this.rand.array(this.mutation(this.genePool));
     }
     return this.rand.array(this.genePool);
   }
-  
+
+  setRandGenePool() {
+    if (this.isMutable) {
+      this.randomizedGenePool =  this.rand.array(this.mutation(this.genePool));
+    }
+    this.randomizedGenePool =  this.rand.array(this.genePool);
+    return this;
+  }
+
   getGene() {
-    return this.rand.array(this.genePool)[0];
+    this.simpleGene = this.rand.array(this.genePool)[0];
+    return this;
+  }
+
+  setSimpleGene() {
+    this.simpleGene = this.rand.array(this.genePool)[0];
+    return this;
   }
 
   makeRandGenePool(Size, geneLength) {
@@ -37,7 +53,7 @@ class Genomics {
       return rdGenePool.slice();
     }
   }
-  
+
 
   mutation(genome, mutationChance) {
     if (!genome) {return}
@@ -48,14 +64,14 @@ class Genomics {
       const geneToMutate = tempGenome.splice(geneNbToMutate, 1).join();
       const geneLength = geneToMutate.length;
       const slicedGenes = [...geneToMutate];
-      const indextoMutate = this.rand.integer(0, geneLength)
+      const indextoMutate = this.rand.integer(0, geneLength);
       slicedGenes[indextoMutate] = String.fromCharCode(this.rand.integer(33, 127));
       const temp = slicedGenes.join("");
       return Array.from(genome).map((elem, idx) => {
         if (idx !== geneNbToMutate){
           return elem;
         } else {
-          return temp; 
+          return temp;
         }
       });
     } else {

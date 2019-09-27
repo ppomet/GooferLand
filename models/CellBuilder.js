@@ -3,62 +3,51 @@ const infoLog = require('debug')('info-Cell');
 const errorLog = require('debug')('error-Cell');
 const conf = require('config');
 
-class Cell {
+class CellBuilder {
   static sanOptions(options) {
     let sanOpt = {
       x: conf.Cell.x,
       y: conf.Cell.y,
-      food: conf.Cell.food,
-      gooferName: null,
+      isFood: conf.Cell.isFood,
+      foodVal: conf.Cell.foodVal,
     };
     if (options && (typeof options) === 'object') {
-      if (options.hasOwnProperty('x')) {
-        if (Number.isSafeInteger(options.x) || Math.abs(options.x) === options.x) {
-          Object.assign(sanOpt, {x: options.x});
-        } else {
-          errorLog(`x Coordinate isn't positive or is out of Range >${options.x}< it is replaced by it's default value : ${conf.Cell.x}`);
-        }
-      }
-      if (options.hasOwnProperty('y')) {
-        if (Number.isSafeInteger(options.y) || Math.abs(options.y) === options.y) {
-          Object.assign(sanOpt, {y: options.y});
-        } else {
-          errorLog(`y Coordinate isn't positive or is out of Range >${options.y}< it is replaced by it's default value : ${conf.Cell.y}`);
-        }
-      }
-      if (options.hasOwnProperty('isFood')) {
-        if (options.isFood) {
-          Object.assign(sanOpt, {food: 1})
-        } else {
-          Object.assign(sanOpt, {food: 0})
-        }
-      }else if (options.hasOwnProperty('foodVal')) {
-        if (Number.isSafeInteger(options.foodVal) && Math.abs(options.foodVal) === options.foodVal) {
-          Object.assign(sanOpt, { food: options.foodVal });
-        } else if (Number.isSafeInteger(options.foodVal) && options.foodVal <= 0) {
-          Object.assign(sanOpt, { food: 0 });
-        } else {
-          errorLog(`foodValue option is out of range or of a bad type >${options.y}< it is replaced by it's default value : ${conf.Cell.y}`);
-        }
-      }
+      if (options.hasOwnProperty('x')) {Object.assign(sanOpt, { x: options.x })}
+      if (options.hasOwnProperty('y')) {Object.assign(sanOpt, { y: options.y })}
+      if (options.hasOwnProperty('isFood')) {Object.assign(sanOpt, { isFood: options.isFood })}
+      if (options.hasOwnProperty('foodVal')) {Object.assign(sanOpt, { foodVal: options.foodVal })}
     }
     return sanOpt;
   }
   constructor(options) {
-    const {x, y, food, gooferName} = Cell.sanOptions(options);
-    this.food = food;
+    const {x, y, isFood, foodVal} = options;
+    // if (isFood === true) {
+    //   this.food = 1;
+    // } else if (foodVal && Number.isSafeInteger(foodVal) && foodVal > 0) {
+    //   this.food = foodVal;
+    // } else if (!isFood || foodVal === 0) {
+    //   this.food = 0;
+    // } else {
+    //   errorLog({isFood, foodVal});
+    //   throw new Error(`incorrect Food parameters at the construction of Cell`);
+    // }
+    // if (x === null || x === undefined || y === null || y === undefined) {
+    //   debugLog({x,y});
+    //   throw new Error('coordinate is missing in cell generation');
+    // }
+    // if (Math.abs(x) !== x || !Number.isSafeInteger(x) || Math.abs(y) !== y || !Number.isSafeInteger(y)) {
+    //   debugLog({x,y});
+    //   throw new Error(`coordinate have to be a positive Integer in cell generation: ${{x,y}}`);
+    // }
     this.x = x;
     this.y = y;
-    this.gooferName = gooferName;
+    this.food = null;
+    this.gooferName = null;
   }
 
   isFoodPresent() {
     return !!this.food;
   }
-
-  getCloneCell() {
-    return
-}
 
   getFood() {
     return this.food;
@@ -77,7 +66,7 @@ class Cell {
     return this;
   }
 
-  updateFoodQuantity(changeQuantity) { /** @param {Number|Boolean} changeQuantity can be an integer or a boolean*/
+  updateFoodQuantity(changeQuantity) { // can be an integer or a boolean
     if (changeQuantity && Number.isSafeInteger(changeQuantity)) {
       return this.updateFoodInteger(changeQuantity);
     } else if (typeof changeQuantity === 'boolean') {
@@ -90,7 +79,6 @@ class Cell {
 
   updateFoodInteger(value) {
     if (this.food + value < 0) {
-      errorLog(`cant update Food by integer`);
       errorLog({x:this.x, y:this.y, food: this.food});
       throw new Error(`tried to remove more food then was present on the {x:${this.x}y:${this.y}} Cell`);
     }
@@ -99,7 +87,7 @@ class Cell {
   }
 
   updateFoodBoolean(value) {
-    this.food = value ? 1 : 0;
+    this.food = value;
     return this;
   }
 
@@ -117,6 +105,8 @@ class Cell {
   }
 
   getCellContent() {
+    debugLog(`the Cell ${this.x} ${this.y} have: ${this.food} food`);
+    (this.gooferName ? debugLog(`and goofer ${this.gooferName}`) : debugLog(`and no Goofer`));
     return {x: this.x, y: this.y, food: this.food, gooferName: this.gooferName};
   }
 
@@ -125,4 +115,4 @@ class Cell {
   }
 }
 
-module.exports = Cell;
+module.exports = CellBuilder;

@@ -1,28 +1,33 @@
-TheGrid = require('../models/TheGrid');
-faker = require('faker');
-Randomize = require('../models/Randomize');
-EventEmitter = require('events');
-debug = require('debug')('insideCity');
+const TheGrid = require('../models/TheGrid');
+const chance = require('chance').Chance();
+const Randomize = require('../models/Randomize');
+const EventEmitter = require('events');
+const debug = require('debug')('insideCity');
+const debugLog = require('debug')('debug-city');
 
 
 class City {
-  constructor(width, height, foodGeneratingCells, cityName) {
-    ((Math.abs(width) === width && width >= 1) ? this.width = width : this.width  = 1);
-    ((Math.abs(height) === height && height >= 1) ? this.height = height : this.height  = 1);
+  constructor(width, height, foodGeneratingCellsNb, cityName) {
+    ((Math.abs(width) === width && width >= 2) ? this.width = width : this.width  = 2);
+    ((Math.abs(height) === height && height >= 2) ? this.height = height : this.height  = 2);
     this.rand = new Randomize();
     this.citizens = [];
     let newDayTimerId = null;
     let newNightTimerId = null;
     this.eventHandler = new EventEmitter();// declaration et assignation
-    console.log("typeof event handler in city =>", this.eventHandler instanceof EventEmitter);
-    this.grid = new TheGrid(width, height).setfoodGeneratingCells(5);
-    this.name = cityName || faker.Company();
+    console.log("typeof event handler in city =>", this.eventHandler instanceof EventEmitter ? "EventEmitter" : "unknown");
+    this.grid = new TheGrid(width, height).setFoodGeneratingCells(foodGeneratingCellsNb);
+    this.name = cityName || chance.city();
 
 
     this.newDay = (msDuration) => {
       if (newDayTimerId) {clearInterval(newDayTimerId)}
       newDayTimerId = setInterval(() => {
-        this.eventHandler.emit('newDay');}, msDuration)
+          debugLog(`number of citizen today : ${this.citizens.length}`);
+          this.eventHandler.emit('newDay');
+          this.eventHandler.emit('Time to Shag');
+        }
+        , msDuration)
     };
 
     this.newNight = (msDuration) => {
@@ -46,17 +51,39 @@ class City {
     }
 
   }
+  /**
+   * @param {Goofer|Array<Goofer>} goofers   A unique instance of goofer or an array of it.
+   */
+    addGooferCitizen(goofers) {
+      if (Array.isArray(goofers)) {
+        debugLog('got an instance of an array');
+        // goofers.map((elem) => {
+        //   this.citizens.push(elem);
+        // })
+        // this.citizens = this.citizens.concat(goofers);
+      }
+    this.citizens = this.citizens.concat(goofers);
 
-    addGridListenToTick() {
-      this.grid.theGridSubscriber(this.eventHandler, 'tick')
+      debugLog('************************************');
+      debugLog(this.citizens);
+      debugLog('*************************************');
+      // this.citizens[goofers.name] = goofers;
+      // debugLog({EVENT: this.eventHandler});
     }
 
-    addGooferCitizen(goofer, events) {
-      this.citizens[goofer.name] = goofer;
+    checkIfGooferExistSomewhere(gooferName) {
+      let occurrences = 0;
+      for (let idx = 0; idx < this.citizens.length; idx++) {
+        if (this.citizens[idx].name === gooferName) {
+          occurrences++;
+          debugLog(`found an occurence of ${gooferName} in the citizens of ${this.name} at emplacement ${idx}`);
+        }
+      }
     }
+
 
     deleteGooferCitizen(gooferName) {
-      this.citizens[gooferName].deleteTickListiner();
+      this.citizens[gooferName];
       delete this.citizens[gooferName];
       console.log("DELETED", gooferName)
     }
@@ -67,5 +94,5 @@ class City {
       }, msDuration)
     }
   }
-  
+
   module.exports = City;

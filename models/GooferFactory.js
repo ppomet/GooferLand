@@ -1,5 +1,5 @@
-Goofer = require('./models/Goofer');
-Genomics = require('./models/Genomics');
+Goofer = require('./Goofer');
+Genomics = require('./Genomics');
 
 class GooferFactory {
     constructor(genePool, isMutable) {

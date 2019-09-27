@@ -1,49 +1,57 @@
 Goofer = require('../models/Goofer');
 Genomics = require('../models/Genomics');
-Faker = require('faker/locale/fr');
+chance = require('chance').Chance();
 Randomize = require('../models/Randomize');
+debugLog = require('debug')('debug-RandFactory');
+infoLog = require('debug')('info-RandFactory');
+errorLog = require('debug')('error-RandFactory');
 
 class RandFactory {
+
   constructor(genePoolSize, genesLength, isMutable) {
-      this.rand = new Randomize();
-      this.MyGenomics = new Genomics(false, isMutable, genePoolSize, genesLength);
-      // console.log(`randfactory genepool => ${this.MyGenomics.genePool}`);
+    this.rand = new Randomize();
+    this.MyGenomics = new Genomics(false, isMutable, genePoolSize, genesLength);
+    debugLog(`randfactory genepool => ${this.MyGenomics.genePool}`);
   }
-  
-  createGoofer(eventHandler, isMale) {
-    let gender;
+
+  defineGender(isMale) {
     if (typeof isMale == "undefined") {
-      gender = !!(this.rand.integer(0, 101) > 57);
+      this.gender = (this.rand.integer(0, 101) > 57);
     } else {
-      gender = isMale;
+      this.gender = isMale;
     }
+    debugLog({RandFactoryDefineGender: this.gender});
+  }
+
+  createGoofer(eventHandler, isMale) {
+    this.defineGender(isMale);
+    debugLog(`is eventHandler instance of Events >${eventHandler instanceof require('events')}<`);
     let goofer = new Goofer(
-      `${Faker.name.firstName()} RD`,  
-      this.rand.integer(0, 26),
+      chance.name({nationality: 'it', gender: this.gender ? 'male': 'female'}) + ' RD',
+      eventHandler,
       this.MyGenomics.getRandGenePool(),
-      gender,
-      eventHandler
-    );
-      return (goofer);
-    }
-    
-    createNbGoofers (eventHandler, numberOfGoofers, isMale) {
-      if (numberOfGoofers &&
-        typeof(numberOfGoofers) === "number" &&
-        numberOfGoofers > 0) {
-          const GooferList = Array(numberOfGoofers).fill(null);
-          for (let idx = 0; idx < numberOfGoofers; idx++) {
-            if (isMale === undefined) {
-              GooferList[idx] = this.createGoofer( !!(idx%2), eventHandler);
-            } else {
-              GooferList[idx] = this.createGoofer(isMale, eventHandler);
-            }
-          }
-          return GooferList;
-        } else {
-          return null;
-        }
-        
+      {
+        age: this.rand.integer(0, 5),
+        oldAge: this.rand.integer(5, 7),
+        maxAge: this.rand.integer(7, 9),
+        isMale: this.gender
       }
+
+    );
+    debugLog({generatedGoofer: goofer});
+    return (goofer);
+  }
+
+  createGooferNB (eventHandler, gooferNb, isMale) {
+    if (!gooferNb || !(Math.abs(gooferNb) === gooferNb)) {
+      gooferNb = 10;
+    }
+    const gooferBox = Array(gooferNb).fill(null);
+    for (let idx = 0; idx < gooferNb; idx++) {
+        this.defineGender(isMale);
+        gooferBox[idx] = this.createGoofer(this.gender, eventHandler);
+      }
+    return gooferBox;
+  }
 }
 module.exports = RandFactory;
